@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Code Singh JET - Mobile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --apple-gray-1: #f5f5f7;
+            --apple-gray-2: #e8e8ed;
+            --apple-gray-3: #86868b;
+            --apple-gray-4: #515154;
+            --apple-gray-5: #1d1d1f;
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #0077ed;
+            --apple-green: #34c759;
+            --apple-green-hover: #30d158;
+            --apple-orange: #ff9500;
+            --apple-orange-hover: #ff9f0a;
+            --apple-border: #d2d2d7;
+            --ios-safe-area-top: env(safe-area-inset-top, 0px);
+            --ios-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --apple-red: #ff3b30;
+            --apple-red-hover: #ff453a;
+            --canada-red: #ff0000;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            background-color: var(--apple-gray-1);
+            color: var(--apple-gray-5);
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: var(--ios-safe-area-top) 0 var(--ios-safe-area-bottom) 0;
+        }
+        
+        /* Mobile-specific header */
+        .mobile-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .mobile-header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--canada-red), #000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--apple-gray-4);
+            cursor: pointer;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+        
+        /* Mobile navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 320px;
+            height: 100%;
+            background: white;
+            z-index: 200;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s ease;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+        
+        .mobile-nav.active {
+            left: 0;
+        }
+        
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            display: none;
+        }
+        
+        .nav-overlay.active {
+            display: block;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            color: var(--apple-gray-4);
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            background: var(--apple-gray-1);
+            color: var(--apple-blue);
+        }
+        
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .close-nav {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--apple-gray-4);
+            cursor: pointer;
+        }
+        
+        /* Tab container for mobile */
+        .tab-container {
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            border-bottom: 1px solid var(--apple-border);
+            background: white;
+            position: sticky;
+            top: 60px;
+            z-index: 90;
+        }
+        
+        .tab-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            padding: 16px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--apple-gray-4);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .tab.active {
+            color: var(--apple-blue);
+            border-bottom: 3px solid var(--apple-blue);
+        }
+        
+        .tab-content {
+            display: none;
+            padding-bottom: 80px; /* Space for action buttons */
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-section {
+            padding: 20px 16px;
+            border-bottom: 1px solid var(--apple-border);
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .form-section h2 {
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 18px;
+            color: var(--apple-gray-5);
+        }
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+        
+        .form-group {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: var(--apple-gray-4);
+            font-weight: 500;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid var(--apple-border);
+            border-radius: 12px;
+            font-size: 16px;
+            background-color: white;
+            transition: all 0.2s ease;
+            -webkit-appearance: none;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.2);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Mobile-optimized tables */
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--apple-border);
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .items-table th {
+            background-color: var(--apple-gray-1);
+            padding: 16px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--apple-gray-4);
+            border-bottom: 1px solid var(--apple-border);
+            white-space: nowrap;
+        }
+        
+        .items-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--apple-border);
+        }
+        
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .items-table input, .items-table textarea, .items-table select {
+            border: none;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            width: 100%;
+        }
+        
+        .items-table input:focus, .items-table textarea:focus, .items-table select:focus {
+            box-shadow: none;
+            border: none;
+        }
+        
+        /* Mobile action buttons */
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 16px;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 80;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .btn-primary {
+            background: var(--apple-blue);
+        }
+        
+        .btn-primary:hover {
+            background: var(--apple-blue-hover);
+        }
+        
+        .btn-success {
+            background: var(--apple-green);
+        }
+        
+        .btn-success:hover {
+            background: var(--apple-green-hover);
+        }
+        
+        .btn-warning {
+            background: var(--apple-orange);
+        }
+        
+        .btn-warning:hover {
+            background: var(--apple-orange-hover);
+        }
+        
+        .btn-danger {
+            background: var(--apple-red);
+        }
+        
+        .btn-danger:hover {
+            background: var(--apple-red-hover);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: var(--apple-gray-4);
+            border: 1px solid var(--apple-border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--apple-gray-1);
+            color: var(--apple-gray-5);
+        }
+        
+        .btn-add {
+            background: transparent;
+            color: var(--apple-blue);
+            border: 1px dashed var(--apple-blue);
+            padding: 12px 16px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-add:hover {
+            background: rgba(0, 113, 227, 0.05);
+            border-style: solid;
+        }
+        
+        .delete-btn {
+            color: #ff3b30;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(255, 59, 48, 0.1);
+        }
+        
+        .preview-section {
+            margin-top: 20px;
+            padding: 20px 16px;
+            background: var(--apple-gray-1);
+            border-top: 1px solid var(--apple-border);
+        }
+        
+        .service-report-preview, .quotation-preview, .invoice-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            overflow-x: auto;
+        }
+        
+        .document-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .document-logo {
+            max-width: 120px;
+            margin-bottom: 15px;
+        }
+        
+        .from-to {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .from-to div {
+            width: 100%;
+            background: var(--apple-gray-1);
+            padding: 16px;
+            border-radius: 12px;
+        }
+        
+        .document-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .document-table th, .document-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--apple-border);
+            white-space: nowrap;
+        }
+        
+        .document-table th {
+            background-color: var(--apple-gray-1);
+            font-weight: 500;
+            color: var(--apple-gray-4);
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .signature-area {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .signature-box {
+            width: 100%;
+            border-top: 1px solid var(--apple-border);
+            padding-top: 15px;
+            text-align: center;
+        }
+        
+        .terms, .payment-details {
+            margin-top: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--apple-gray-3);
+            font-size: 14px;
+            border-top: 1px solid var(--apple-border);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background-color: #34c759;
+            color: white;
+        }
+        
+        .status-inprogress {
+            background-color: #ff9500;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #ffcc00;
+            color: black;
+        }
+        
+        .shared-data-section {
+            background-color: rgba(0, 113, 227, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .shared-data-section h3 {
+            margin-bottom: 15px;
+            color: var(--apple-blue);
+            font-size: 18px;
+        }
+        
+        /* Inventory Management Styles */
+        .inventory-section {
+            margin: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+        }
+        
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .inventory-table th, .inventory-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--apple-border);
+        }
+        
+        .inventory-table th {
+            background-color: var(--apple-gray-1);
+            font-weight: 500;
+            color: var(--apple-gray-4);
+        }
+        
+        .inventory-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .stock-low {
+            color: var(--apple-red);
+            font-weight: 600;
+        }
+        
+        .stock-ok {
+            color: var(--apple-green);
+        }
+        
+        .inventory-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .inventory-form .form-group {
+            margin-bottom: 0;
+        }
+        
+        .inventory-form .full-width {
+            grid-column: span 2;
+        }
+        
+        /* Modal for inventory management */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            display: none;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--apple-border);
+            position: relative;
+        }
+        
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--apple-gray-5);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--apple-gray-4);
+            cursor: pointer;
+        }
+        
+        /* Canadian flag marker */
+        .canada-flag {
+            display: inline-block;
+            width: 20px;
+            height: 10px;
+            background: linear-gradient(to right, var(--canada-red) 33%, white 33%, white 66%, var(--canada-red) 66%);
+            margin-right: 8px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
+        }
+        
+        /* iOS and Android specific adjustments */
+        @supports (-webkit-touch-callout: none) {
+            /* iOS specific styles */
+            input, select, textarea {
+                font-size: 16px !important; /* Prevents zoom on focus */
+            }
+        }
+        
+        /* Android specific styles */
+        @supports (not (-webkit-touch-callout: none)) {
+            body {
+                scroll-behavior: smooth;
+            }
+        }
+        
+        /* Mobile-specific animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-section, .action-buttons, .preview-section {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Custom styling for number inputs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        .payment-details {
+            background: var(--apple-gray-1);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .time-inputs .form-group {
+            width: 100%;
+        }
+        
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--apple-gray-5);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h1>Code Singh JET</h1>
+        <div style="width: 48px;"></div> <!-- Spacer for balance -->
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="nav-overlay" id="navOverlay"></div>
+    <div class="mobile-nav" id="mobileNav">
+        <button class="close-nav" id="closeNav">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="nav-item active" data-tab="service-report">
+            <i class="fas fa-clipboard-list"></i>
+            Service Report
+        </div>
+        <div class="nav-item" data-tab="quotation">
+            <i class="fas fa-file-invoice-dollar"></i>
+            Quotation
+        </div>
+        <div class="nav-item" data-tab="invoice">
+            <i class="fas fa-file-invoice"></i>
+            Invoice
+        </div>
+        <div class="nav-item" data-tab="inventory">
+            <i class="fas fa-boxes"></i>
+            Inventory
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-cog"></i>
+            Settings
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-question-circle"></i>
+            Help & Support
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tab container for mobile -->
+        <div class="tab-container">
+            <div class="tab active" data-tab="service-report">Service Report</div>
+            <div class="tab" data-tab="quotation">Quotation</div>
+            <div class="tab" data-tab="invoice">Invoice</div>
+            <div class="tab" data-tab="inventory">Inventory</div>
+        </div>
+
+        <!-- Shared Company Information -->
+        <div class="shared-data-section">
+            <h3><span class="canada-flag"></span>Company Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sharedCompanyName">Company Name</label>
+                    <input type="text" id="sharedCompanyName" value="Code Singh JET" placeholder="Your Company Name">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sharedCompanyAddress">Address</label>
+                    <textarea id="sharedCompanyAddress" placeholder="Company Address">123 Tech Street, Toronto, ON M5V 2T6</textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sharedCompanyPhone">Phone</label>
+                    <input type="text" id="sharedCompanyPhone" placeholder="+1 (416) 123-4567" value="+1 (416) 987-6543">
+                </div>
+                <div class="form-group">
+                    <label for="sharedCompanyEmail">Email</label>
+                    <input type="email" id="sharedCompanyEmail" placeholder="info@company.com" value="contact@codesinghjet.ca">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="businessNumber">Business Number (BN)</label>
+                    <input type="text" id="businessNumber" placeholder="123456789" value="123456789">
+                </div>
+                <div class="form-group">
+                    <label for="hstNumber">HST Number</label>
+                    <input type="text" id="hstNumber" placeholder="123456789 RT0001" value="123456789 RT0001">
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Report Tab Content -->
+        <div class="tab-content active" id="service-report-tab">
+            <!-- Form sections will be loaded here dynamically -->
+        </div>
+
+        <!-- Quotation Tab Content -->
+        <div class="tab-content" id="quotation-tab">
+            <!-- Form sections will be loaded here dynamically -->
+        </div>
+
+        <!-- Invoice Tab Content -->
+        <div class="tab-content" id="invoice-tab">
+            <!-- Form sections will be loaded here dynamically -->
+        </div>
+
+        <!-- Inventory Tab Content -->
+        <div class="tab-content" id="inventory-tab">
+            <div class="inventory-section">
+                <h2><span class="canada-flag"></span>Inventory Management</h2>
+                <p>Manage your parts inventory. Stock levels will automatically update when invoices are generated.</p>
+                
+                <button class="btn btn-add" id="addInventoryBtn">
+                    <i class="fas fa-plus"></i> Add New Part
+                </button>
+                
+                <div class="inventory-table-container">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>Part Name</th>
+                                <th>SKU</th>
+                                <th>Stock</th>
+                                <th>Price (CAD)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <!-- Inventory items will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons (fixed at bottom) -->
+        <div class="action-buttons">
+            <button type="button" class="btn btn-warning" id="previewBtn">
+                <i class="fas fa-eye"></i>
+                Preview
+            </button>
+            <button type="button" class="btn btn-success" id="generatePdfBtn">
+                <i class="fas fa-file-pdf"></i>
+                PDF
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetFormBtn">
+                <i class="fas fa-redo"></i>
+                Reset
+            </button>
+        </div>
+
+        <div class="footer">
+            <p>© 2023 Code Singh JET - Canadian Business Document Generator</p>
+        </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div class="modal-overlay" id="inventoryModalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="inventoryModalTitle"><span class="canada-flag"></span>Add New Part</h2>
+                <button class="close-modal" id="closeInventoryModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="inventory-form">
+                <div class="form-group full-width">
+                    <label for="partName">Part Name</label>
+                    <input type="text" id="partName" placeholder="Enter part name">
+                </div>
+                <div class="form-group">
+                    <label for="partSku">SKU</label>
+                    <input type="text" id="partSku" placeholder="Part SKU">
+                </div>
+                <div class="form-group">
+                    <label for="partStock">Initial Stock</label>
+                    <input type="number" id="partStock" placeholder="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="partPrice">Price (CAD)</label>
+                    <input type="number" id="partPrice" placeholder="0.00" min="0" step="0.01">
+                </div>
+                <div class="form-group full-width">
+                    <label for="partDescription">Description</label>
+                    <textarea id="partDescription" placeholder="Part description"></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <button class="btn btn-primary" id="saveInventoryBtn">Save Part</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the app
+            initApp();
+        });
+
+        function initApp() {
+            // Set current dates
+            setCurrentDates();
+            
+            // Initialize mobile navigation
+            initMobileNav();
+            
+            // Initialize tab functionality
+            initTabs();
+            
+            // Load form sections
+            loadFormSections();
+            
+            // Initialize service report functionality
+            initServiceReport();
+            
+            // Initialize quotation functionality
+            initQuotation();
+            
+            // Initialize invoice functionality
+            initInvoice();
+            
+            // Initialize shared company data
+            initSharedData();
+            
+            // Set up action buttons
+            setupActionButtons();
+            
+            // Initialize inventory management
+            initInventory();
+        }
+
+        function initMobileNav() {
+            const menuToggle = document.getElementById('menuToggle');
+            const closeNav = document.getElementById('closeNav');
+            const navOverlay = document.getElementById('navOverlay');
+            const mobileNav = document.getElementById('mobileNav');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            menuToggle.addEventListener('click', () => {
+                mobileNav.classList.add('active');
+                navOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeNav.addEventListener('click', closeMobileNav);
+            navOverlay.addEventListener('click', closeMobileNav);
+            
+            navItems.forEach(item => {
+                if (item.dataset.tab) {
+                    item.addEventListener('click', () => {
+                        const tabId = item.dataset.tab;
+                        switchTab(tabId);
+                        closeMobileNav();
+                    });
+                }
+            });
+            
+            function closeMobileNav() {
+                mobileNav.classList.remove('active');
+                navOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function setCurrentDates() {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            
+            // These will be used when the form sections are loaded
+            window.currentDate = formattedDate;
+            
+            // Set valid until date (30 days from now as per Canadian standards)
+            const validUntil = new Date(today);
+            validUntil.setDate(validUntil.getDate() + 30);
+            window.validUntilDate = validUntil.toISOString().split('T')[0];
+            
+            // Set due date (30 days from now)
+            const dueDate = new Date(today);
+            dueDate.setDate(dueDate.getDate() + 30);
+            window.dueDate = dueDate.toISOString().split('T')[0];
+        }
+
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show the selected tab content
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // Update nav items
+                    document.querySelectorAll('.nav-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (item.dataset.tab === tabId) {
+                            item.classList.add('active');
+                        }
+                    });
+                    
+                    // If inventory tab is selected, refresh inventory
+                    if (tabId === 'inventory') {
+                        loadInventoryItems();
+                    }
+                });
+            });
+        }
+        
+        function switchTab(tabId) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.tab === tabId) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+            
+            // If inventory tab is selected, refresh inventory
+            if (tabId === 'inventory') {
+                loadInventoryItems();
+            }
+        }
+
+        function loadFormSections() {
+            // This would typically be loaded from external files or templates
+            // For this example, we'll just show a simplified version
+            
+            const serviceReportTab = document.getElementById('service-report-tab');
+            serviceReportTab.innerHTML = `
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Client Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientCompany">Client Company</label>
+                            <input type="text" id="clientCompany" placeholder="Client Company Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientName">Client Name</label>
+                            <input type="text" id="clientName" placeholder="Client Contact Person">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientAddress">Client Address</label>
+                            <textarea id="clientAddress" placeholder="Client Address"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clientEmail">Client Email</label>
+                            <input type="email" id="clientEmail" placeholder="client@company.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="clientPhone">Client Phone</label>
+                            <input type="text" id="clientPhone" placeholder="Client Phone Number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Service Details</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportNumber">Report Number</label>
+                            <input type="text" id="reportNumber" placeholder="SR-001" value="SR-">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serviceDate">Service Date</label>
+                            <input type="date" id="serviceDate" value="${window.currentDate}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serviceType">Service Type</label>
+                            <select id="serviceType">
+                                <option value="">Select Service Type</option>
+                                <option value="repair">Repair</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="installation">Installation</option>
+                                <option value="inspection">Inspection</option>
+                                <option value="emergency">Emergency Service</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="technicianName">Technician Name</label>
+                            <input type="text" id="technicianName" placeholder="Technician Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="technicianId">Technician ID</label>
+                            <input type="text" id="technicianId" placeholder="Technician ID">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Service Description</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="problemReported">Problem Reported</label>
+                            <textarea id="problemReported" placeholder="Describe the problem reported by the client"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="workPerformed">Work Performed</label>
+                            <textarea id="workPerformed" placeholder="Describe the work performed"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section" id="serviceReportPreviewSection" style="display: none;">
+                    <h2><span class="canada-flag"></span>Service Report Preview</h2>
+                    <div class="service-report-preview" id="serviceReportPreview">
+                        <!-- Preview content will be generated here -->
+                    </div>
+                </div>
+            `;
+            
+            // Load quotation tab content
+            const quotationTab = document.getElementById('quotation-tab');
+            quotationTab.innerHTML = `
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Client Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteClientCompany">Client Company</label>
+                            <input type="text" id="quoteClientCompany" placeholder="Client Company Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteClientName">Client Name</label>
+                            <input type="text" id="quoteClientName" placeholder="Client Contact Person">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteClientAddress">Client Address</label>
+                            <textarea id="quoteClientAddress" placeholder="Client Address"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteClientEmail">Client Email</label>
+                            <input type="email" id="quoteClientEmail" placeholder="client@company.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="quoteClientPhone">Client Phone</label>
+                            <input type="text" id="quoteClientPhone" placeholder="Client Phone Number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Quotation Details</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteNumber">Quotation Number</label>
+                            <input type="text" id="quoteNumber" placeholder="QT-001" value="QT-">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteDate">Quotation Date</label>
+                            <input type="date" id="quoteDate" value="${window.currentDate}">
+                        </div>
+                        <div class="form-group">
+                            <label for="quoteValidUntil">Valid Until</label>
+                            <input type="date" id="quoteValidUntil" value="${window.validUntilDate}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Quotation Items</h2>
+                    <table class="items-table" id="quotationItemsTable">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price (CAD)</th>
+                                <th>Total (CAD)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Item Description" class="item-desc"></td>
+                                <td><input type="number" placeholder="Qty" class="item-qty" min="1" value="1"></td>
+                                <td><input type="number" placeholder="Price" class="item-price" min="0" step="0.01"></td>
+                                <td class="item-total">0.00</td>
+                                <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Subtotal</td>
+                                <td id="quoteSubtotal">0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">HST (13%)</td>
+                                <td id="quoteTax">0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Total (CAD)</td>
+                                <td id="quoteTotal">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <button class="btn btn-add" id="addQuoteItemBtn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Terms & Conditions</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quoteTerms">Terms</label>
+                            <textarea id="quoteTerms" placeholder="Enter terms and conditions">• Payment due within 30 days
+• Prices valid for 30 days
+• 50% deposit required for project initiation
+• HST (13%) included in all prices
+• Payment methods: E-transfer, credit card, or cheque</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section" id="quotationPreviewSection" style="display: none;">
+                    <h2><span class="canada-flag"></span>Quotation Preview</h2>
+                    <div class="quotation-preview" id="quotationPreview">
+                        <!-- Preview content will be generated here -->
+                    </div>
+                </div>
+            `;
+            
+            // Load invoice tab content
+            const invoiceTab = document.getElementById('invoice-tab');
+            invoiceTab.innerHTML = `
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Client Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceClientCompany">Client Company</label>
+                            <input type="text" id="invoiceClientCompany" placeholder="Client Company Name">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceClientName">Client Name</label>
+                            <input type="text" id="invoiceClientName" placeholder="Client Contact Person">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceClientAddress">Client Address</label>
+                            <textarea id="invoiceClientAddress" placeholder="Client Address"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceClientEmail">Client Email</label>
+                            <input type="email" id="invoiceClientEmail" placeholder="client@company.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceClientPhone">Client Phone</label>
+                            <input type="text" id="invoiceClientPhone" placeholder="Client Phone Number">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Invoice Details</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Invoice Number</label>
+                            <input type="text" id="invoiceNumber" placeholder="INV-001" value="INV-">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="invoiceDate">Invoice Date</label>
+                            <input type="date" id="invoiceDate" value="${window.currentDate}">
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDueDate">Due Date</label>
+                            <input type="date" id="invoiceDueDate" value="${window.dueDate}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Invoice Items</h2>
+                    <table class="items-table" id="invoiceItemsTable">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price (CAD)</th>
+                                <th>Total (CAD)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" placeholder="Item Description" class="item-desc"></td>
+                                <td><input type="number" placeholder="Qty" class="item-qty" min="1" value="1"></td>
+                                <td><input type="number" placeholder="Price" class="item-price" min="0" step="0.01"></td>
+                                <td class="item-total">0.00</td>
+                                <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Subtotal</td>
+                                <td id="invoiceSubtotal">0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">HST (13%)</td>
+                                <td id="invoiceTax">0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: right; font-weight: 500;">Total (CAD)</td>
+                                <td id="invoiceTotal">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <button class="btn btn-add" id="addInvoiceItemBtn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+
+                <div class="form-section">
+                    <h2><span class="canada-flag"></span>Payment Details</h2>
+                    <div class="payment-details">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bankName">Bank Name</label>
+                                <input type="text" id="bankName" placeholder="Bank Name" value="Royal Bank of Canada">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="accountName">Account Name</label>
+                                <input type="text" id="accountName" placeholder="Account Name" value="Code Singh JET">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="accountNumber">Account Number</label>
+                                <input type="text" id="accountNumber" placeholder="Account Number" value="1234567890">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transitNumber">Transit Number</label>
+                                <input type="text" id="transitNumber" placeholder="Transit Number" value="12345">
+                            </div>
+                            <div class="form-group">
+                                <label for="institutionNumber">Institution Number</label>
+                                <input type="text" id="institutionNumber" placeholder="Institution Number" value="003">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-section" id="invoicePreviewSection" style="display: none;">
+                    <h2><span class="canada-flag"></span>Invoice Preview</h2>
+                    <div class="invoice-preview" id="invoicePreview">
+                        <!-- Preview content will be generated here -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function initServiceReport() {
+            // Initialize service report functionality
+            // This would include setting up event listeners for form elements
+        }
+
+        function initQuotation() {
+            // Initialize quotation functionality
+            const addItemBtn = document.getElementById('addQuoteItemBtn');
+            const itemsTable = document.getElementById('quotationItemsTable');
+            
+            addItemBtn.addEventListener('click', () => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td><input type="text" placeholder="Item Description" class="item-desc"></td>
+                    <td><input type="number" placeholder="Qty" class="item-qty" min="1" value="1"></td>
+                    <td><input type="number" placeholder="Price" class="item-price" min="0" step="0.01"></td>
+                    <td class="item-total">0.00</td>
+                    <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+                `;
+                
+                itemsTable.querySelector('tbody').appendChild(newRow);
+                
+                // Add event listeners to new inputs
+                const qtyInput = newRow.querySelector('.item-qty');
+                const priceInput = newRow.querySelector('.item-price');
+                
+                qtyInput.addEventListener('input', calculateQuoteTotals);
+                priceInput.addEventListener('input', calculateQuoteTotals);
+                
+                // Add event listener to delete button
+                newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                    this.closest('tr').remove();
+                    calculateQuoteTotals();
+                });
+            });
+            
+            // Add event listeners to existing inputs
+            const initialQtyInput = itemsTable.querySelector('.item-qty');
+            const initialPriceInput = itemsTable.querySelector('.item-price');
+            
+            if (initialQtyInput) {
+                initialQtyInput.addEventListener('input', calculateQuoteTotals);
+            }
+            
+            if (initialPriceInput) {
+                initialPriceInput.addEventListener('input', calculateQuoteTotals);
+            }
+            
+            // Add event listener to initial delete button
+            const initialDeleteBtn = itemsTable.querySelector('.delete-btn');
+            if (initialDeleteBtn) {
+                initialDeleteBtn.addEventListener('click', function() {
+                    // Don't remove if it's the only row
+                    if (itemsTable.querySelectorAll('tbody tr').length > 1) {
+                        this.closest('tr').remove();
+                        calculateQuoteTotals();
+                    }
+                });
+            }
+            
+            function calculateQuoteTotals() {
+                let subtotal = 0;
+                
+                itemsTable.querySelectorAll('tbody tr').forEach(row => {
+                    const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const total = qty * price;
+                    
+                    row.querySelector('.item-total').textContent = total.toFixed(2);
+                    subtotal += total;
+                });
+                
+                // Canadian HST rate (13% for Ontario)
+                const tax = subtotal * 0.13;
+                const total = subtotal + tax;
+                
+                document.getElementById('quoteSubtotal').textContent = subtotal.toFixed(2);
+                document.getElementById('quoteTax').textContent = tax.toFixed(2);
+                document.getElementById('quoteTotal').textContent = total.toFixed(2);
+            }
+        }
+
+        function initInvoice() {
+            // Initialize invoice functionality
+            const addItemBtn = document.getElementById('addInvoiceItemBtn');
+            const itemsTable = document.getElementById('invoiceItemsTable');
+            
+            addItemBtn.addEventListener('click', () => {
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td><input type="text" placeholder="Item Description" class="item-desc"></td>
+                    <td><input type="number" placeholder="Qty" class="item-qty" min="1" value="1"></td>
+                    <td><input type="number" placeholder="Price" class="item-price" min="0" step="0.01"></td>
+                    <td class="item-total">0.00</td>
+                    <td><button class="delete-btn"><i class="fas fa-trash"></i></button></td>
+                `;
+                
+                itemsTable.querySelector('tbody').appendChild(newRow);
+                
+                // Add event listeners to new inputs
+                const qtyInput = newRow.querySelector('.item-qty');
+                const priceInput = newRow.querySelector('.item-price');
+                
+                qtyInput.addEventListener('input', calculateInvoiceTotals);
+                priceInput.addEventListener('input', calculateInvoiceTotals);
+                
+                // Add event listener to delete button
+                newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                    this.closest('tr').remove();
+                    calculateInvoiceTotals();
+                });
+            });
+            
+            // Add event listeners to existing inputs
+            const initialQtyInput = itemsTable.querySelector('.item-qty');
+            const initialPriceInput = itemsTable.querySelector('.item-price');
+            
+            if (initialQtyInput) {
+                initialQtyInput.addEventListener('input', calculateInvoiceTotals);
+            }
+            
+            if (initialPriceInput) {
+                initialPriceInput.addEventListener('input', calculateInvoiceTotals);
+            }
+            
+            // Add event listener to initial delete button
+            const initialDeleteBtn = itemsTable.querySelector('.delete-btn');
+            if (initialDeleteBtn) {
+                initialDeleteBtn.addEventListener('click', function() {
+                    // Don't remove if it's the only row
+                    if (itemsTable.querySelectorAll('tbody tr').length > 1) {
+                        this.closest('tr').remove();
+                        calculateInvoiceTotals();
+                    }
+                });
+            }
+            
+            function calculateInvoiceTotals() {
+                let subtotal = 0;
+                
+                itemsTable.querySelectorAll('tbody tr').forEach(row => {
+                    const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                    const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                    const total = qty * price;
+                    
+                    row.querySelector('.item-total').textContent = total.toFixed(2);
+                    subtotal += total;
+                });
+                
+                // Canadian HST rate (13% for Ontario)
+                const tax = subtotal * 0.13;
+                const total = subtotal + tax;
+                
+                document.getElementById('invoiceSubtotal').textContent = subtotal.toFixed(2);
+                document.getElementById('invoiceTax').textContent = tax.toFixed(2);
+                document.getElementById('invoiceTotal').textContent = total.toFixed(2);
+            }
+        }
+
+        function initSharedData() {
+            // Initialize shared company data
+            // This would typically sync data across forms
+        }
+
+        function setupActionButtons() {
+            // Preview button
+            const previewBtn = document.getElementById('previewBtn');
+            previewBtn.addEventListener('click', generatePreview);
+            
+            // Generate PDF button
+            const generatePdfBtn = document.getElementById('generatePdfBtn');
+            generatePdfBtn.addEventListener('click', generatePDF);
+            
+            // Reset form button
+            const resetFormBtn = document.getElementById('resetFormBtn');
+            resetFormBtn.addEventListener('click', resetForm);
+        }
+
+        function generatePreview() {
+            // Get the active tab
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            
+            // Show the appropriate preview section
+            const previewSection = document.getElementById(`${activeTab}PreviewSection`);
+            previewSection.style.display = 'block';
+            
+            // Generate the preview content based on the active tab
+            if (activeTab === 'service-report') {
+                generateServiceReportPreview();
+            } else if (activeTab === 'quotation') {
+                generateQuotationPreview();
+            } else if (activeTab === 'invoice') {
+                generateInvoicePreview();
+            }
+            
+            // Scroll to the preview section
+            previewSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateServiceReportPreview() {
+            const previewElement = document.getElementById('serviceReportPreview');
+            
+            // Get form values
+            const companyName = document.getElementById('sharedCompanyName').value || 'Code Singh JET';
+            const companyAddress = document.getElementById('sharedCompanyAddress').value || '123 Tech Street, Toronto, ON M5V 2T6';
+            const companyPhone = document.getElementById('sharedCompanyPhone').value || '+1 (416) 987-6543';
+            const companyEmail = document.getElementById('sharedCompanyEmail').value || 'contact@codesinghjet.ca';
+            
+            const clientCompany = document.getElementById('clientCompany').value || 'Client Company';
+            const clientName = document.getElementById('clientName').value || 'Client Name';
+            const clientAddress = document.getElementById('clientAddress').value || 'Client Address';
+            const clientEmail = document.getElementById('clientEmail').value || 'client@company.com';
+            const clientPhone = document.getElementById('clientPhone').value || 'Client Phone';
+            
+            const reportNumber = document.getElementById('reportNumber').value || 'SR-001';
+            const serviceDate = document.getElementById('serviceDate').value || window.currentDate;
+            const serviceType = document.getElementById('serviceType').value || 'Service Type';
+            const technicianName = document.getElementById('technicianName').value || 'Technician Name';
+            const technicianId = document.getElementById('technicianId').value || 'Tech ID';
+            
+            const problemReported = document.getElementById('problemReported').value || 'Problem reported by client';
+            const workPerformed = document.getElementById('workPerformed').value || 'Work performed description';
+            
+            // Format the date
+            const formattedDate = formatDate(serviceDate);
+            
+            // Generate the preview HTML
+            previewElement.innerHTML = `
+                <div class="document-header">
+                    <h1>Service Report</h1>
+                    <p>Report Number: ${reportNumber}</p>
+                    <p>Date: ${formattedDate}</p>
+                </div>
+                
+                <div class="from-to">
+                    <div>
+                        <h3>From:</h3>
+                        <p><strong>${companyName}</strong></p>
+                        <p>${companyAddress}</p>
+                        <p>Phone: ${companyPhone}</p>
+                        <p>Email: ${companyEmail}</p>
+                    </div>
+                    
+                    <div>
+                        <h3>To:</h3>
+                        <p><strong>${clientCompany}</strong></p>
+                        <p>Attn: ${clientName}</p>
+                        <p>${clientAddress}</p>
+                        <p>Phone: ${clientPhone}</p>
+                        <p>Email: ${clientEmail}</p>
+                    </div>
+                </div>
+                
+                <div class="service-details">
+                    <h3>Service Details</h3>
+                    <p><strong>Service Type:</strong> ${serviceType}</p>
+                    <p><strong>Service Date:</strong> ${formattedDate}</p>
+                    <p><strong>Technician:</strong> ${technicianName} (ID: ${technicianId})</p>
+                </div>
+                
+                <div class="problem-reported">
+                    <h3>Problem Reported</h3>
+                    <p>${problemReported}</p>
+                </div>
+                
+                <div class="work-performed">
+                    <h3>Work Performed</h3>
+                    <p>${workPerformed}</p>
+                </div>
+                
+                <div class="signature-area">
+                    <div class="signature-box">
+                        <p>Technician Signature</p>
+                        <p>_________________________</p>
+                        <p>Name: ${technicianName}</p>
+                        <p>Date: ${formattedDate}</p>
+                    </div>
+                    
+                    <div class="signature-box">
+                        <p>Client Signature</p>
+                        <p>_________________________</p>
+                        <p>Name: ${clientName}</p>
+                        <p>Date: ${formattedDate}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateQuotationPreview() {
+            const previewElement = document.getElementById('quotationPreview');
+            
+            // Get form values
+            const companyName = document.getElementById('sharedCompanyName').value || 'Code Singh JET';
+            const companyAddress = document.getElementById('sharedCompanyAddress').value || '123 Tech Street, Toronto, ON M5V 2T6';
+            const companyPhone = document.getElementById('sharedCompanyPhone').value || '+1 (416) 987-6543';
+            const companyEmail = document.getElementById('sharedCompanyEmail').value || 'contact@codesinghjet.ca';
+            const businessNumber = document.getElementById('businessNumber').value || '123456789';
+            const hstNumber = document.getElementById('hstNumber').value || '123456789 RT0001';
+            
+            const clientCompany = document.getElementById('quoteClientCompany').value || 'Client Company';
+            const clientName = document.getElementById('quoteClientName').value || 'Client Name';
+            const clientAddress = document.getElementById('quoteClientAddress').value || 'Client Address';
+            const clientEmail = document.getElementById('quoteClientEmail').value || 'client@company.com';
+            const clientPhone = document.getElementById('quoteClientPhone').value || 'Client Phone';
+            
+            const quoteNumber = document.getElementById('quoteNumber').value || 'QT-001';
+            const quoteDate = document.getElementById('quoteDate').value || window.currentDate;
+            const quoteValidUntil = document.getElementById('quoteValidUntil').value || window.validUntilDate;
+            
+            const terms = document.getElementById('quoteTerms').value || 'Standard terms and conditions apply.';
+            
+            // Format the dates
+            const formattedQuoteDate = formatDate(quoteDate);
+            const formattedValidUntil = formatDate(quoteValidUntil);
+            
+            // Generate the items table
+            let itemsHTML = '';
+            const itemsTable = document.getElementById('quotationItemsTable');
+            let subtotal = 0;
+            
+            itemsTable.querySelectorAll('tbody tr').forEach(row => {
+                const desc = row.querySelector('.item-desc').value || 'Item Description';
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                subtotal += total;
+                
+                itemsHTML += `
+                    <tr>
+                        <td>${desc}</td>
+                        <td>${qty}</td>
+                        <td>$${price.toFixed(2)}</td>
+                        <td>$${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            // Canadian HST rate (13% for Ontario)
+            const tax = subtotal * 0.13;
+            const total = subtotal + tax;
+            
+            // Generate the preview HTML
+            previewElement.innerHTML = `
+                <div class="document-header">
+                    <h1>Quotation</h1>
+                    <p>Quotation Number: ${quoteNumber}</p>
+                    <p>Date: ${formattedQuoteDate}</p>
+                    <p>Valid Until: ${formattedValidUntil}</p>
+                </div>
+                
+                <div class="from-to">
+                    <div>
+                        <h3>From:</h3>
+                        <p><strong>${companyName}</strong></p>
+                        <p>${companyAddress}</p>
+                        <p>Phone: ${companyPhone}</p>
+                        <p>Email: ${companyEmail}</p>
+                        <p>Business #: ${businessNumber}</p>
+                        <p>HST #: ${hstNumber}</p>
+                    </div>
+                    
+                    <div>
+                        <h3>To:</h3>
+                        <p><strong>${clientCompany}</strong></p>
+                        <p>Attn: ${clientName}</p>
+                        <p>${clientAddress}</p>
+                        <p>Phone: ${clientPhone}</p>
+                        <p>Email: ${clientEmail}</p>
+                    </div>
+                </div>
+                
+                <table class="document-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>Subtotal</strong></td>
+                            <td><strong>$${subtotal.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>HST (13%)</strong></td>
+                            <td><strong>$${tax.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>Total (CAD)</strong></td>
+                            <td><strong>$${total.toFixed(2)}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="terms">
+                    <h3>Terms & Conditions</h3>
+                    <p>${terms.replace(/\n/g, '<br>')}</p>
+                </div>
+                
+                <div class="signature-area">
+                    <div class="signature-box">
+                        <p>Authorized Signature</p>
+                        <p>_________________________</p>
+                        <p>${companyName}</p>
+                        <p>Date: ${formattedQuoteDate}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateInvoicePreview() {
+            const previewElement = document.getElementById('invoicePreview');
+            
+            // Get form values
+            const companyName = document.getElementById('sharedCompanyName').value || 'Code Singh JET';
+            const companyAddress = document.getElementById('sharedCompanyAddress').value || '123 Tech Street, Toronto, ON M5V 2T6';
+            const companyPhone = document.getElementById('sharedCompanyPhone').value || '+1 (416) 987-6543';
+            const companyEmail = document.getElementById('sharedCompanyEmail').value || 'contact@codesinghjet.ca';
+            const businessNumber = document.getElementById('businessNumber').value || '123456789';
+            const hstNumber = document.getElementById('hstNumber').value || '123456789 RT0001';
+            
+            const clientCompany = document.getElementById('invoiceClientCompany').value || 'Client Company';
+            const clientName = document.getElementById('invoiceClientName').value || 'Client Name';
+            const clientAddress = document.getElementById('invoiceClientAddress').value || 'Client Address';
+            const clientEmail = document.getElementById('invoiceClientEmail').value || 'client@company.com';
+            const clientPhone = document.getElementById('invoiceClientPhone').value || 'Client Phone';
+            
+            const invoiceNumber = document.getElementById('invoiceNumber').value || 'INV-001';
+            const invoiceDate = document.getElementById('invoiceDate').value || window.currentDate;
+            const invoiceDueDate = document.getElementById('invoiceDueDate').value || window.dueDate;
+            
+            const bankName = document.getElementById('bankName').value || 'Royal Bank of Canada';
+            const accountName = document.getElementById('accountName').value || 'Code Singh JET';
+            const accountNumber = document.getElementById('accountNumber').value || 'Account Number';
+            const transitNumber = document.getElementById('transitNumber').value || '12345';
+            const institutionNumber = document.getElementById('institutionNumber').value || '003';
+            
+            // Format the dates
+            const formattedInvoiceDate = formatDate(invoiceDate);
+            const formattedDueDate = formatDate(invoiceDueDate);
+            
+            // Generate the items table
+            let itemsHTML = '';
+            const itemsTable = document.getElementById('invoiceItemsTable');
+            let subtotal = 0;
+            
+            itemsTable.querySelectorAll('tbody tr').forEach(row => {
+                const desc = row.querySelector('.item-desc').value || 'Item Description';
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                subtotal += total;
+                
+                itemsHTML += `
+                    <tr>
+                        <td>${desc}</td>
+                        <td>${qty}</td>
+                        <td>$${price.toFixed(2)}</td>
+                        <td>$${total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            // Canadian HST rate (13% for Ontario)
+            const tax = subtotal * 0.13;
+            const total = subtotal + tax;
+            
+            // Generate the preview HTML
+            previewElement.innerHTML = `
+                <div class="document-header">
+                    <h1>Invoice</h1>
+                    <p>Invoice Number: ${invoiceNumber}</p>
+                    <p>Date: ${formattedInvoiceDate}</p>
+                    <p>Due Date: ${formattedDueDate}</p>
+                </div>
+                
+                <div class="from-to">
+                    <div>
+                        <h3>From:</h3>
+                        <p><strong>${companyName}</strong></p>
+                        <p>${companyAddress}</p>
+                        <p>Phone: ${companyPhone}</p>
+                        <p>Email: ${companyEmail}</p>
+                        <p>Business #: ${businessNumber}</p>
+                        <p>HST #: ${hstNumber}</p>
+                    </div>
+                    
+                    <div>
+                        <h3>To:</h3>
+                        <p><strong>${clientCompany}</strong></p>
+                        <p>Attn: ${clientName}</p>
+                        <p>${clientAddress}</p>
+                        <p>Phone: ${clientPhone}</p>
+                        <p>Email: ${clientEmail}</p>
+                    </div>
+                </div>
+                
+                <table class="document-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>Subtotal</strong></td>
+                            <td><strong>$${subtotal.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>HST (13%)</strong></td>
+                            <td><strong>$${tax.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><strong>Total (CAD)</strong></td>
+                            <td><strong>$${total.toFixed(2)}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <div class="payment-details">
+                    <h3>Payment Details</h3>
+                    <p><strong>Bank Name:</strong> ${bankName}</p>
+                    <p><strong>Account Name:</strong> ${accountName}</p>
+                    <p><strong>Account Number:</strong> ${accountNumber}</p>
+                    <p><strong>Transit Number:</strong> ${transitNumber}</p>
+                    <p><strong>Institution Number:</strong> ${institutionNumber}</p>
+                    <p><strong>Please make cheque payable to:</strong> ${companyName}</p>
+                </div>
+                
+                <div class="signature-area">
+                    <div class="signature-box">
+                        <p>Authorized Signature</p>
+                        <p>_________________________</p>
+                        <p>${companyName}</p>
+                        <p>Date: ${formattedInvoiceDate}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-CA', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function generatePDF() {
+            // Show a toast notification
+            showToast('Generating PDF...');
+            
+            // Get the active tab
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            
+            // Use jsPDF to generate PDF based on the active tab
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add content based on the active tab
+            if (activeTab === 'service-report') {
+                generateServiceReportPDF(doc);
+            } else if (activeTab === 'quotation') {
+                generateQuotationPDF(doc);
+            } else if (activeTab === 'invoice') {
+                generateInvoicePDF(doc);
+            }
+            
+            // Save the PDF
+            const fileName = `${activeTab}_${new Date().getTime()}.pdf`;
+            doc.save(fileName);
+            
+            // Show success message
+            setTimeout(() => {
+                showToast('PDF downloaded successfully!');
+            }, 1000);
+        }
+
+        function generateServiceReportPDF(doc) {
+            // This would generate the service report PDF
+            doc.text('Service Report', 105, 15, { align: 'center' });
+            doc.text('This is a placeholder for the actual Service Report PDF content.', 20, 30);
+            // More detailed implementation would go here
+        }
+
+        function generateQuotationPDF(doc) {
+            // This would generate the quotation PDF
+            doc.text('Quotation', 105, 15, { align: 'center' });
+            doc.text('This is a placeholder for the actual Quotation PDF content.', 20, 30);
+            // More detailed implementation would go here
+        }
+
+        function generateInvoicePDF(doc) {
+            // This would generate the invoice PDF
+            doc.text('Invoice', 105, 15, { align: 'center' });
+            doc.text('This is a placeholder for the actual Invoice PDF content.', 20, 30);
+            
+            // Check if we need to deduct inventory
+            const itemsTable = document.getElementById('invoiceItemsTable');
+            const items = [];
+            
+            itemsTable.querySelectorAll('tbody tr').forEach(row => {
+                const desc = row.querySelector('.item-desc').value;
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                
+                if (desc && qty > 0) {
+                    items.push({ name: desc, quantity: qty });
+                }
+            });
+            
+            // Deduct from inventory if items exist
+            if (items.length > 0) {
+                deductFromInventory(items);
+            }
+        }
+
+        function resetForm() {
+            // Get the active tab
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            
+            // Reset the form for the active tab
+            if (activeTab === 'service-report') {
+                document.getElementById('service-report-tab').querySelectorAll('input, textarea, select').forEach(element => {
+                    if (element.id !== 'sharedCompanyName' && 
+                        element.id !== 'sharedCompanyAddress' && 
+                        element.id !== 'sharedCompanyPhone' && 
+                        element.id !== 'sharedCompanyEmail' &&
+                        element.id !== 'businessNumber' &&
+                        element.id !== 'hstNumber') {
+                        element.value = '';
+                    }
+                });
+                
+                // Reset specific fields to default values
+                document.getElementById('reportNumber').value = 'SR-';
+                document.getElementById('serviceDate').value = window.currentDate;
+                
+            } else if (activeTab === 'quotation') {
+                document.getElementById('quotation-tab').querySelectorAll('input, textarea, select').forEach(element => {
+                    if (element.id !== 'sharedCompanyName' && 
+                        element.id !== 'sharedCompanyAddress' && 
+                        element.id !== 'sharedCompanyPhone' && 
+                        element.id !== 'sharedCompanyEmail' &&
+                        element.id !== 'businessNumber' &&
+                        element.id !== 'hstNumber') {
+                        element.value = '';
+                    }
+                });
+                
+                // Reset specific fields to default values
+                document.getElementById('quoteNumber').value = 'QT-';
+                document.getElementById('quoteDate').value = window.currentDate;
+                document.getElementById('quoteValidUntil').value = window.validUntilDate;
+                
+                // Reset items table
+                const itemsTable = document.getElementById('quotationItemsTable');
+                itemsTable.querySelectorAll('tbody tr').forEach((row, index) => {
+                    if (index > 0) {
+                        row.remove();
+                    } else {
+                        row.querySelector('.item-desc').value = '';
+                        row.querySelector('.item-qty').value = '1';
+                        row.querySelector('.item-price').value = '';
+                    }
+                });
+                
+                // Reset totals
+                document.getElementById('quoteSubtotal').textContent = '0.00';
+                document.getElementById('quoteTax').textContent = '0.00';
+                document.getElementById('quoteTotal').textContent = '0.00';
+                
+            } else if (activeTab === 'invoice') {
+                document.getElementById('invoice-tab').querySelectorAll('input, textarea, select').forEach(element => {
+                    if (element.id !== 'sharedCompanyName' && 
+                        element.id !== 'sharedCompanyAddress' && 
+                        element.id !== 'sharedCompanyPhone' && 
+                        element.id !== 'sharedCompanyEmail' &&
+                        element.id !== 'businessNumber' &&
+                        element.id !== 'hstNumber') {
+                        element.value = '';
+                    }
+                });
+                
+                // Reset specific fields to default values
+                document.getElementById('invoiceNumber').value = 'INV-';
+                document.getElementById('invoiceDate').value = window.currentDate;
+                document.getElementById('invoiceDueDate').value = window.dueDate;
+                
+                // Reset items table
+                const itemsTable = document.getElementById('invoiceItemsTable');
+                itemsTable.querySelectorAll('tbody tr').forEach((row, index) => {
+                    if (index > 0) {
+                        row.remove();
+                    } else {
+                        row.querySelector('.item-desc').value = '';
+                        row.querySelector('.item-qty').value = '1';
+                        row.querySelector('.item-price').value = '';
+                    }
+                });
+                
+                // Reset totals
+                document.getElementById('invoiceSubtotal').textContent = '0.00';
+                document.getElementById('invoiceTax').textContent = '0.00';
+                document.getElementById('invoiceTotal').textContent = '0.00';
+            }
+            
+            // Hide preview sections
+            document.querySelectorAll('.preview-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show confirmation message
+            showToast('Form has been reset');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Inventory Management Functions
+        function initInventory() {
+            // Load inventory items from localStorage
+            loadInventoryItems();
+            
+            // Set up event listeners for inventory management
+            const addInventoryBtn = document.getElementById('addInventoryBtn');
+            const closeInventoryModal = document.getElementById('closeInventoryModal');
+            const inventoryModalOverlay = document.getElementById('inventoryModalOverlay');
+            const saveInventoryBtn = document.getElementById('saveInventoryBtn');
+            
+            addInventoryBtn.addEventListener('click', () => {
+                // Reset form
+                document.getElementById('partName').value = '';
+                document.getElementById('partSku').value = '';
+                document.getElementById('partStock').value = '';
+                document.getElementById('partPrice').value = '';
+                document.getElementById('partDescription').value = '';
+                
+                // Update modal title
+                document.getElementById('inventoryModalTitle').textContent = 'Add New Part';
+                
+                // Show modal
+                inventoryModalOverlay.classList.add('active');
+            });
+            
+            closeInventoryModal.addEventListener('click', () => {
+                inventoryModalOverlay.classList.remove('active');
+            });
+            
+            inventoryModalOverlay.addEventListener('click', (e) => {
+                if (e.target === inventoryModalOverlay) {
+                    inventoryModalOverlay.classList.remove('active');
+                }
+            });
+            
+            saveInventoryBtn.addEventListener('click', saveInventoryItem);
+        }
+
+        function loadInventoryItems() {
+            // Get inventory from localStorage or use default data
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [
+                { id: 1, name: 'Laptop Battery', sku: 'BAT-LP-001', stock: 15, price: 89.99, description: '15.6" Laptop Battery' },
+                { id: 2, name: 'SSD 500GB', sku: 'SSD-500-001', stock: 8, price: 79.99, description: '500GB SATA SSD' },
+                { id: 3, name: 'RAM 8GB DDR4', sku: 'RAM-8G-D4', stock: 20, price: 49.99, description: '8GB DDR4 RAM' },
+                { id: 4, name: 'Keyboard', sku: 'KB-STANDARD', stock: 5, price: 29.99, description: 'Standard USB Keyboard' },
+                { id: 5, name: 'Wireless Mouse', sku: 'MS-WL-001', stock: 12, price: 24.99, description: 'Wireless Optical Mouse' }
+            ];
+            
+            // Save to localStorage if using default data
+            if (!localStorage.getItem('inventory')) {
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+            }
+            
+            // Render inventory table
+            const tableBody = document.getElementById('inventoryTableBody');
+            tableBody.innerHTML = '';
+            
+            inventory.forEach(item => {
+                const row = document.createElement('tr');
+                const stockClass = item.stock < 10 ? 'stock-low' : 'stock-ok';
+                
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.sku}</td>
+                    <td class="${stockClass}">${item.stock}</td>
+                    <td>$${item.price.toFixed(2)}</td>
+                    <td>
+                        <button class="delete-btn inventory-delete" data-id="${item.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.inventory-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteInventoryItem(id);
+                });
+            });
+        }
+
+        function saveInventoryItem() {
+            const name = document.getElementById('partName').value;
+            const sku = document.getElementById('partSku').value;
+            const stock = parseInt(document.getElementById('partStock').value) || 0;
+            const price = parseFloat(document.getElementById('partPrice').value) || 0;
+            const description = document.getElementById('partDescription').value;
+            
+            if (!name || !sku) {
+                showToast('Part name and SKU are required');
+                return;
+            }
+            
+            // Get existing inventory
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            
+            // Create new item
+            const newItem = {
+                id: Date.now(), // Simple ID generation
+                name,
+                sku,
+                stock,
+                price,
+                description
+            };
+            
+            // Add to inventory
+            inventory.push(newItem);
+            
+            // Save to localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            
+            // Close modal
+            document.getElementById('inventoryModalOverlay').classList.remove('active');
+            
+            // Reload inventory table
+            loadInventoryItems();
+            
+            // Show success message
+            showToast('Part added to inventory');
+        }
+
+        function deleteInventoryItem(id) {
+            if (!confirm('Are you sure you want to delete this item from inventory?')) {
+                return;
+            }
+            
+            // Get existing inventory
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            
+            // Filter out the item to delete
+            inventory = inventory.filter(item => item.id !== id);
+            
+            // Save to localStorage
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            
+            // Reload inventory table
+            loadInventoryItems();
+            
+            // Show success message
+            showToast('Part deleted from inventory');
+        }
+
+        function deductFromInventory(items) {
+            // Get existing inventory
+            let inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let updated = false;
+            
+            // For each item in the invoice
+            items.forEach(invoiceItem => {
+                // Find matching inventory item by name
+                const inventoryItem = inventory.find(item => 
+                    item.name.toLowerCase() === invoiceItem.name.toLowerCase());
+                
+                if (inventoryItem) {
+                    // Check if enough stock is available
+                    if (inventoryItem.stock >= invoiceItem.quantity) {
+                        // Deduct the quantity
+                        inventoryItem.stock -= invoiceItem.quantity;
+                        updated = true;
+                    } else {
+                        // Not enough stock
+                        showToast(`Insufficient stock for ${invoiceItem.name}. Only ${inventoryItem.stock} available.`);
+                    }
+                }
+            });
+            
+            // Save updated inventory if changes were made
+            if (updated) {
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                loadInventoryItems(); // Refresh the inventory display
+                showToast('Inventory updated successfully');
+            }
+        }
+    </script>
+</body>
+</html>
